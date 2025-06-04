@@ -20,3 +20,16 @@ def parse_code(source_or_path):
 
     return ast.parse(source)
 
+def get_functions(tree):
+    '''
+
+    :param tree: from the parse_code function
+    :return: List of all functions in the python code
+    '''
+    functions = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            functions.append(node)
+    return functions
+
+
