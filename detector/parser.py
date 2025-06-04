@@ -32,4 +32,16 @@ def get_functions(tree):
             functions.append(node)
     return functions
 
+def get_classes(tree):
+    '''
+
+    :param tree: from the parse_code function
+    :return: List of all classes in the python code
+    '''
+    classes = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            classes.append(node)
+    return classes
+
 
