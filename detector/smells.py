@@ -42,7 +42,37 @@ class SmellDetector:
                 line_count = end_line - start_line + 1  # Total lines spanned by the function
 
                 # Check if function is longer than allowed maximum
-                if line_count > max_lines:
+                if line_count >= max_lines:
                     long_functions[node.name] = line_count  # Record function name and its length
 
         return long_functions
+
+    def detect_large_classes(self, tree, max_methods=10):
+        '''
+        Detect classes in the AST that contain too many methods.
+
+        :param tree: ast.AST
+            The Abstract Syntax Tree (AST) of the Python code to analyze.
+        :param max_methods: int, optional (default=10)
+            The maximum number of methods a class can have before being considered too large.
+        :return: dict
+            A dictionary mapping class names (str) to their method counts (int) for classes exceeding max_methods.
+        '''
+        large_classes = {}
+
+        # Traverse all nodes in the AST tree
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                method_count = 0
+
+                # Check each element in the class body
+                for method in node.body:
+                    if isinstance(method, ast.FunctionDef):
+                        method_count += 1
+
+                # If method count exceeds or equals threshold, record it
+                if method_count >= max_methods:
+                    large_classes[node.name] = method_count
+
+        return large_classes
+
