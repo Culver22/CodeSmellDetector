@@ -42,7 +42,7 @@ class SmellDetector:
                 line_count = end_line - start_line + 1  # Total lines spanned by the function
 
                 # Check if function is longer than allowed maximum
-                if line_count >= max_lines:
+                if line_count > max_lines:
                     long_functions[node.name] = line_count  # Record function name and its length
 
         return long_functions
@@ -71,8 +71,40 @@ class SmellDetector:
                         method_count += 1
 
                 # If method count exceeds or equals threshold, record it
-                if method_count >= max_methods:
+                if method_count > max_methods:
                     large_classes[node.name] = method_count
 
         return large_classes
+
+    def detect_long_parameter_list(self, tree, max_params=5):
+        '''
+        Detects functions that have too many parameters.
+
+        :param tree: ast.AST
+            The Abstract Syntax Tree (AST) of the Python code to analyze.
+        :param max_params: int, optional (default=5)
+            The maximum number of parameters a function can have before being considered too complex.
+        :return: dict
+            A dictionary mapping function names (str) to the number of parameters (int) for functions exceeding max_params.
+        '''
+        long_param_functions = {}
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                parameter_names = []  # List to hold parameter names
+
+                for argument in node.args.args:
+                    parameter_names.append(argument.arg)
+
+                # Exclude 'self' if it's a method inside a class
+                if parameter_names and parameter_names[0] == 'self':
+                    parameter_names = parameter_names[1:]
+
+                parameter_count = len(parameter_names)
+
+                if parameter_count > max_params:
+                    long_param_functions[node.name] = parameter_count
+
+        return long_param_functions
+
 
