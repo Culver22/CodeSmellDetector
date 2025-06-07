@@ -107,4 +107,53 @@ class SmellDetector:
 
         return long_param_functions
 
+    def detect_deep_nesting(self, node=None, current_depth=0, max_depth=3):
+        '''
+        Detect functions with deep levels of nested control structures.
 
+        :param node: ast.AST
+            Current node in the AST traversal (defaults to root tree if None).
+        :param current_depth: int
+            Current level of nesting (used internally in recursion).
+        :param max_depth: int
+            Max allowed depth before being flagged.
+        :return: dict
+            Function names mapped to their max nesting depth if they exceed threshold.
+        '''
+        # If no node passed, use the root tree
+        if node is None:
+            node = self.tree
+
+        control_nodes = (
+            ast.If,
+            ast.For,
+            ast.While,
+            ast.With,
+            ast.Try,
+        )
+
+        results = {}
+
+        for child in ast.iter_child_nodes(node):
+            # If it's a function, start fresh recursion inside it
+            if isinstance(child, ast.FunctionDef):
+                depth = self.detect_deep_nesting(child, current_depth=0, max_depth=max_depth)
+                if depth > max_depth:
+                    results[child.name] = depth
+
+            # If it's a control structure, recurse deeper
+            elif isinstance(child, control_nodes):
+                depth = self.detect_deep_nesting(child, current_depth + 1, max_depth=max_depth)
+                if isinstance(depth, dict):
+                    results.update(depth)
+                else:
+                    # Not inside a function — skip storing result
+                    pass
+
+            # Recurse normally to continue checking children
+            else:
+                depth = self.detect_deep_nesting(child, current_depth, max_depth)
+                if isinstance(depth, dict):
+                    results.update(depth)
+
+        return results if current_depth == 0 else current_depth
