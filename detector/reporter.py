@@ -1,8 +1,5 @@
 class Reporter:
     def __init__(self, smells):
-        self.smells = smells
-
-    def generate_report(self):
         '''
         :param smells: Dictionary containing the output of all smell detectors.
         Example:
@@ -13,7 +10,11 @@ class Reporter:
             'deep_nesting': {...}
             }
         '''
-        print(('=' * 10), 'CODE SMELL REPORT', ('=' * 10))
+        self.smells = smells
+
+    def generate_report(self):
+
+        print(f"{'=' * 10}, CODE SMELL REPORT, {'=' * 10}")
 
         # Loop through all smell types and their results
         for smell_name, results in self.smells.items():
