@@ -17,7 +17,7 @@ class CodeSmellApp:
         """
         self.root = root
         self.root.title("Code Smell Detector")
-        self.root.geometry("700x500")
+        self.root.geometry("1000x750")
 
         # Setting up UI
 
@@ -39,7 +39,14 @@ class CodeSmellApp:
         self.output_box.pack(padx=10, pady=10)
 
     def browse_file(self):
-        pass
+        file_path = filedialog.askopenfilename(
+            title="Select Python File", # Title of the dialog window
+            filetypes=[("Python Files", "*.py"), ("All Files", "*.*")] # Options to show .py files or all files
+        )
+        if file_path:
+            self.file_entry.delete(0, tk.END)  # Clear the existing text
+            self.file_entry.insert(0,file_path)  # Insert new file path
+
 
     def run_detection(self):
         pass
