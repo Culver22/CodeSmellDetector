@@ -39,6 +39,11 @@ class CodeSmellApp:
         self.output_box.pack(padx=10, pady=10)
 
     def browse_file(self):
+        """
+        Opens File explorer for selecting a python file and updates the entry box.
+        browse_file is called in the constructor when the "Browse button" is selected
+
+        """
         file_path = filedialog.askopenfilename(
             title="Select Python File", # Title of the dialog window
             filetypes=[("Python Files", "*.py"), ("All Files", "*.*")] # Options to show .py files or all files
@@ -49,4 +54,5 @@ class CodeSmellApp:
 
 
     def run_detection(self):
-        pass
+
+
