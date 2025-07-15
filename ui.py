@@ -81,8 +81,8 @@ class CodeSmellApp:
 
             # Run all smell detection methods and store results
             smells = {
-                'long_functions': detector.detect_long_functions(tree),
                 'large_classes': detector.detect_large_classes(tree),
+                'long_functions': detector.detect_long_functions(tree),
                 'too_many_parameters': detector.detect_long_parameter_list(tree),
                 'deep_nesting': detector.detect_deep_nesting(tree),
             }
@@ -105,10 +105,10 @@ class CodeSmellApp:
 
                 # Print results with formatting based on smell type
                 for name, value in results.items():
-                    if smell_name == 'long_functions':
-                        self.output_box.insert(tk.END, f"  - {name}: {value} lines\n")
-                    elif smell_name == 'large_classes':
+                    if smell_name == 'large_classes':
                         self.output_box.insert(tk.END, f"  - {name}: {value} methods\n")
+                    elif smell_name == 'long_functions':
+                        self.output_box.insert(tk.END, f"  - {name}: {value} lines\n")
                     elif smell_name == 'too_many_parameters':
                         self.output_box.insert(tk.END, f"  - {name}: {value} parameters\n")
                     elif smell_name == 'deep_nesting':

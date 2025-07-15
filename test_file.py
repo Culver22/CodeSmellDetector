@@ -35,7 +35,6 @@ class LargeExampleClass:
         pass
 
 
-
 def example_long_function():
     total = 0
     for i in range(10):
