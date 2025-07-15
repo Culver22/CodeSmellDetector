@@ -1,5 +1,6 @@
 import ast
 
+
 class SmellDetector:
     def __init__(self, tree, config=None):
         self.tree = tree
@@ -7,7 +8,7 @@ class SmellDetector:
         self.config = config or {}
 
     def detect_long_functions(self, tree, max_lines=30):
-        '''
+        """
         Detect functions in the AST that exceed a specified number of lines.
 
         NOTE: The function counts blank lines within a function
@@ -18,7 +19,7 @@ class SmellDetector:
             The maximum number of lines a function can have before being considered too long.
         :return: dict
             A dictionary mapping function names (str) to their line counts (int) for functions longer than max_lines.
-        '''
+        """
         long_functions = {}  # Dictionary to store functions that are too long
 
         # Traverse all nodes in the AST tree
@@ -48,7 +49,7 @@ class SmellDetector:
         return long_functions
 
     def detect_large_classes(self, tree, max_methods=10):
-        '''
+        """
         Detect classes in the AST that contain too many methods.
 
         :param tree: ast.AST
@@ -57,7 +58,7 @@ class SmellDetector:
             The maximum number of methods a class can have before being considered too large.
         :return: dict
             A dictionary mapping class names (str) to their method counts (int) for classes exceeding max_methods.
-        '''
+        """
         large_classes = {}
 
         # Traverse all nodes in the AST tree
@@ -77,7 +78,7 @@ class SmellDetector:
         return large_classes
 
     def detect_long_parameter_list(self, tree, max_params=5):
-        '''
+        """
         Detects functions that have too many parameters.
 
         :param tree: ast.AST
@@ -85,8 +86,9 @@ class SmellDetector:
         :param max_params: int, optional (default=5)
             The maximum number of parameters a function can have before being considered too complex.
         :return: dict
-            A dictionary mapping function names (str) to the number of parameters (int) for functions exceeding max_params.
-        '''
+            A dictionary mapping function names (str) to the number of parameters (int) for functions exceeding
+            max_params.
+        """
         long_param_functions = {}
 
         for node in ast.walk(tree):
@@ -108,7 +110,7 @@ class SmellDetector:
         return long_param_functions
 
     def detect_deep_nesting(self, node=None, current_depth=0, max_depth=3):
-        '''
+        """
         Detect functions with deep levels of nested control structures.
 
         :param node: ast.AST
@@ -119,7 +121,7 @@ class SmellDetector:
             Max allowed depth before being flagged.
         :return: dict
             Function names mapped to their max nesting depth if they exceed threshold.
-        '''
+        """
         # If no node passed, use the root tree
         if node is None:
             node = self.tree
@@ -135,25 +137,48 @@ class SmellDetector:
         results = {}
 
         for child in ast.iter_child_nodes(node):
-            # If it's a function, start fresh recursion inside it
+            # If it's a function definition, track the deepest nesting inside it
             if isinstance(child, ast.FunctionDef):
-                depth = self.detect_deep_nesting(child, current_depth=0, max_depth=max_depth)
-                if isinstance(depth, int) and depth > max_depth:
-                    results[child.name] = depth
+                max_found = self._calculate_max_nesting(child)
+                if max_found > max_depth:
+                    results[child.name] = max_found
 
-            # If it's a control structure, recurse deeper
-            elif isinstance(child, control_nodes):
-                depth = self.detect_deep_nesting(child, current_depth + 1, max_depth=max_depth)
-                if isinstance(depth, dict):
-                    results.update(depth)
-                else:
-                    # Not inside a function — skip storing result
-                    pass
-
-            # Recurse normally to continue checking children
+            # Continue searching inside the module or class
             else:
-                depth = self.detect_deep_nesting(child, current_depth, max_depth)
-                if isinstance(depth, dict):
-                    results.update(depth)
+                results.update(self.detect_deep_nesting(child, max_depth=max_depth))
 
-        return results if current_depth == 0 else current_depth
+        return results
+
+    def _calculate_max_nesting(self, node, depth=0):
+        """
+        Recursively calculates the maximum depth of nested control structures.
+
+        :param node: ast.AST
+        The AST node to inspect.
+        :param depth: int
+        The current depth of control structure nesting.
+        :return: int
+        The deepest level of nesting found under this node.
+        """
+
+        control_nodes = (
+            ast.If,
+            ast.For,
+            ast.While,
+            ast.With,
+            ast.Try,
+        )
+
+        max_depth = depth
+
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, control_nodes):
+                # Increase depth if it's a control node
+                child_depth = self._calculate_max_nesting(child, depth + 1)
+                max_depth = max(max_depth, child_depth)
+            else:
+                # Recurse without increasing depth
+                child_depth = self._calculate_max_nesting(child, depth)
+                max_depth = max(max_depth, child_depth)
+
+        return max_depth
