@@ -52,17 +52,34 @@ class CodeSmellApp:
             self.file_entry.insert(0, file_path)  # Insert new file path
 
     def run_detection(self):
+        '''
+        This method handles the detection of code smells from a selected Python file.
+        It uses the SmellDetector class to check for:
+            - Long functions
+            - Large classes
+            - Too many parameters
+            - Deep nesting
 
-        file_path = self.file_entry.get()
+        It then prints a structured report in the output_box (Tkinter Text widget).
+        If an invalid file is selected, or an error occurs during analysis,
+        an error message is shown instead.
+        '''
 
+        file_path = self.file_entry.get()  # Get the selected file path from the input field
+
+        # Ensure the selected file is a .py file
         if not file_path.endswith(".py"):
             messagebox.showerror("Invalid File", "Please select a valid Python (.py) file.")
             return
 
         try:
-            tree = parse_code(file_path)  # When a file ends in .py it is then parsed
-            detector = SmellDetector(tree)  # Passed into SmellDetector class
+            # Parse the file into an AST
+            tree = parse_code(file_path)
 
+            # Create an instance of SmellDetector with the AST
+            detector = SmellDetector(tree)
+
+            # Run all smell detection methods and store results
             smells = {
                 'long_functions': detector.detect_long_functions(tree),
                 'large_classes': detector.detect_large_classes(tree),
@@ -70,16 +87,23 @@ class CodeSmellApp:
                 'deep_nesting': detector.detect_deep_nesting(tree),
             }
 
-            # Clear old output
+            # Clear any previous output from the Text box
             self.output_box.delete("1.0", tk.END)
 
-            # Use reporter to generate console-like output
+            # Start the formatted output report
             self.output_box.insert(tk.END, "=" * 10 + " CODE SMELL REPORT " + "=" * 10 + "\n\n")
+
+            # Loop through each smell type and print the findings
             for smell_name, results in smells.items():
+                # Format smell title
                 self.output_box.insert(tk.END, f"[SMELL] {smell_name.replace('_', ' ').title()}:\n")
+
+                # Handle case when no smells were found
                 if not results:
                     self.output_box.insert(tk.END, "  No issues found.\n\n")
                     continue
+
+                # Print results with formatting based on smell type
                 for name, value in results.items():
                     if smell_name == 'long_functions':
                         self.output_box.insert(tk.END, f"  - {name}: {value} lines\n")
@@ -91,7 +115,11 @@ class CodeSmellApp:
                         self.output_box.insert(tk.END, f"  - {name}: nesting depth {value}\n")
                     else:
                         self.output_box.insert(tk.END, f"  - {name}: {value}\n")
+
+                # Add spacing after each smell type
                 self.output_box.insert(tk.END, "\n")
 
         except Exception as e:
+            # Show error message box if analysis fails
             messagebox.showerror("Error", f"Failed to analyze file:\n{str(e)}")
+
