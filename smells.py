@@ -6,7 +6,7 @@ class SmellDetector:
         # Allows for config like thresholds e.g max_lines or max_params
         self.config = config or {}
 
-    def detect_long_functions(self, tree, max_lines=50):
+    def detect_long_functions(self, tree, max_lines=30):
         '''
         Detect functions in the AST that exceed a specified number of lines.
 
@@ -14,7 +14,7 @@ class SmellDetector:
 
         :param tree: ast.AST
             The Abstract Syntax Tree (AST) of the Python code to analyze.
-        :param max_lines: int, optional (default=50)
+        :param max_lines: int, optional (default=30)
             The maximum number of lines a function can have before being considered too long.
         :return: dict
             A dictionary mapping function names (str) to their line counts (int) for functions longer than max_lines.
@@ -138,7 +138,7 @@ class SmellDetector:
             # If it's a function, start fresh recursion inside it
             if isinstance(child, ast.FunctionDef):
                 depth = self.detect_deep_nesting(child, current_depth=0, max_depth=max_depth)
-                if depth > max_depth:
+                if isinstance(depth, int) and depth > max_depth:
                     results[child.name] = depth
 
             # If it's a control structure, recurse deeper
