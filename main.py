@@ -1,5 +1,5 @@
 import tkinter as tk
-from ui.ui import CodeSmellApp
+from ui import CodeSmellApp
 
 if __name__ == "__main__":
     root = tk.Tk()
