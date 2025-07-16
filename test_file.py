@@ -36,6 +36,12 @@ class LargeExampleClass:
 
 
 def example_long_function():
+    """
+    SOME TEXT
+    MORE TEXt
+    THERE ARE NOW 6 LINES OF DOCSTRING INCLUDING THIS ONE
+    :return:
+    """
     total = 0
     for i in range(10):
         total += i
