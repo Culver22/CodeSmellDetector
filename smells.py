@@ -23,14 +23,11 @@ class SmellDetector:
         """
         long_functions = {}  # Dictionary to store functions that are too long
 
-        # Split the full source code into lines to access by line number
-        source_lines = self.source_code
-
         # Traverse all nodes in the AST tree
         for node in ast.walk(tree):
             # Check if node is a function definition
             if isinstance(node, ast.FunctionDef):
-                # Get the docstring for the function, if any
+                # Get the docstring for the function
                 docstring = ast.get_docstring(node)
 
                 # Starting line number of the function definition
@@ -40,7 +37,7 @@ class SmellDetector:
                 # the max lineno in all child nodes, fallback to start_line
                 end_line = max(getattr(n, 'lineno', start_line) for n in ast.walk(node))
 
-                # Calculate the length of the docstring in lines, if present
+                # Calculate the length of the docstring in lines
                 if docstring:
                     docstring_lines = len(docstring.splitlines())
                     # Adjust start line to exclude docstring lines (and the quotes line)

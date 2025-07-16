@@ -37,11 +37,26 @@ Detection':
 They are then able to 'Browse' again, if not - closing the 'Code Smell Detector' window will end the program
 
 
-To Add:
+### Future Improvements
+- Add line-level highlights for detected code smells in the source preview
 
-Add a function in order to exclude blank lines and docstrings in long function smell test
+- Enable analysis of entire directories, not just individual .py files
+
+- Implement additional smells (e.g. dead code, duplicate code, cyclomatic complexity)
+
+- Export results to .txt or .md for reporting
+
+- Allow user-configurable thresholds (e.g. function length, class size)
+
+- Add CLI interface alongside the GUI for flexibility
+
+- Improve test coverage, including edge cases and integration tests
+
+- Support plugin-style detectors for easy extensibility
 
 
 ### Sources
+https://docs.python.org/3/library/ast.html#function-and-class-definitions (Abstract Syntax Trees)
+https://waylonwalker.com/python-docstring-ast/ (Docstrings in AST)
 https://www.tutorialspoint.com/python/tk_button.htm (Buttons)
 https://www.geeksforgeeks.org/python/file-explorer-in-python-using-tkinter/ (File explorer)
