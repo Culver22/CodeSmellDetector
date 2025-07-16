@@ -1,5 +1,7 @@
 # CodeSmellDetector
 
+#### Note: This is a complete version of the project. Future improvements are outlined below, but the current version is fully functional and polished for demonstration.
+
 This Program is a Python tool designed to analyse common code smells - indicators of potential issues that would impact
 code quality, readability and maintainability. The project includes a user-friendly GUI, built with Tkinter, for 
 easy interaction and inspection.
