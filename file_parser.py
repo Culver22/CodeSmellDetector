@@ -18,7 +18,9 @@ def parse_code(source_or_path):
             # Treat input as code string
             source = source_or_path
 
-        return ast.parse(source)
+        tree = ast.parse(source)
+        tree.source_lines = source.splitlines()
+        return tree
     except FileNotFoundError:
         raise ValueError(f'File not found: {source_or_path}')
     except SyntaxError as e:
